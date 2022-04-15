@@ -49,13 +49,13 @@ def winning_move(b, p):
             if board[r][c] == p and board[r + 1][c] == p and board[r + 2][c] == p and board[r + 3][c] == p:
                 return True
 
-    # Check positively sloped diaganols
+    # Check positively sloped diagonals
     for c in range(COLUMN_COUNT - 3):
         for r in range(ROW_COUNT - 3):
             if board[r][c] == p and board[r + 1][c + 1] == p and board[r + 2][c + 2] == p and board[r + 3][c + 3] == p:
                 return True
 
-    # Check negatively sloped diaganols
+    # Check negatively sloped diagonals
     for c in range(COLUMN_COUNT - 3):
         for r in range(3, ROW_COUNT):
             if board[r][c] == p and board[r - 1][c + 1] == p and board[r - 2][c + 2] == p and board[r - 3][c + 3] == p:
@@ -95,7 +95,8 @@ screen = pygame.display.set_mode(size)
 draw_board(board)
 pygame.display.update()
 
-myfont = pygame.font.SysFont("monospace", 75)
+titlefont = pygame.font.SysFont("monospace", 40)
+winfont = pygame.font.SysFont("monospace", 75)
 
 while not game_over:
     for event in pygame.event.get():
@@ -122,9 +123,12 @@ while not game_over:
                     drop_piece(board, row, col, 1)
 
                     if winning_move(board, 1):
-                        label = myfont.render("Player 1 wids!!", 1, RED)
+                        label = winfont.render("Player 1 wins!!", 1, RED)
                         screen.blit(label, (40, 10))
                         game_over = True
+
+                    turn += 1
+                    turn %= 2
 
             else:
                 posx = event.pos[0]
@@ -135,13 +139,15 @@ while not game_over:
                     drop_piece(board, row, col, 2)
 
                     if winning_move(board, 2):
-                        label = myfont.render("Player 2 wids!!", 1, YELLOW)
+                        label = winfont.render("Player 2 wins!!", 1, YELLOW)
                         screen.blit(label, (40, 10))
                         game_over = True
+
+                    turn += 1
+                    turn %= 2
+
             print_board(board)
             draw_board(board)
-            turn += 1
-            turn %= 2
 
             if game_over:
                 pygame.time.wait(3000)
