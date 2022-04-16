@@ -23,10 +23,26 @@ global winfont
 global board
 global screen
 
-#code to create and manage the title screen
+
+# code to create and manage the title screen
+def draw_titlescreen():
+    screen.fill(BLUE)
+    title = winfont.render("Connect 4", 1, BLACK)
+    title_rect = title.get_rect(center=(width / 2, height / 6))
+    screen.blit(title, title_rect)
+
+    training = titlefont.render("Training Mode", 1, BLACK)
+    training_rect = training.get_rect(center=(width / 2, 2 * height / 3))
+    screen.blit(training, training_rect)
+
+    testing = titlefont.render("Testing Mode", 1, BLACK)
+    testing_rect = testing.get_rect(center=(width / 2, 2 * (height / 3) - 50))
+    screen.blit(testing, testing_rect)
+
+    pygame.display.update()
 
 
-#code to create and manage the game board
+# code to create and manage the game board
 def create_board():
     temp = np.zeros((ROW_COUNT, COLUMN_COUNT))
     return temp
@@ -104,8 +120,6 @@ def init_board():
 
     global screen
     screen = pygame.display.set_mode(size)
-    draw_board(board)
-    pygame.display.update()
 
     global titlefont
     titlefont = pygame.font.SysFont("monospace", 40)
@@ -173,4 +187,12 @@ def play_game():
 
 if __name__ == "__main__":
     init_board()
-    play_game()
+    draw_titlescreen()
+    #play_game()
+    clicked = False
+    while not clicked:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                clicked = True
