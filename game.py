@@ -16,6 +16,7 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+WHITE = (255, 255, 255)
 
 global titlefont
 global winfont
@@ -40,6 +41,7 @@ def draw_titlescreen():
     screen.blit(testing, testing_rect)
 
     pygame.display.update()
+    return training, testing
 
 
 # code to create and manage the game board
@@ -187,12 +189,32 @@ def play_game():
 
 if __name__ == "__main__":
     init_board()
-    draw_titlescreen()
-    #play_game()
+    buttons = draw_titlescreen()
+
     clicked = False
     while not clicked:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            if event.type == pygame.MOUSEMOTION:
+                #fix
+                button1 = buttons[0]
+                button1rect = button1.get_rect()
+                print(button1rect[0], button1rect[1])
+                if button1rect.collidepoint(event.pos[0], event.pos[1]):
+                    button1.render("Training Mode", 1, WHITE)
+                    pygame.display.update()
+                #fix to
+                # stuff to highlight when text is moused over
+                clicked = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 clicked = True
+
+    #logic to update title so that when mouse over option it changes
+    #the play_game method will have 2 variations
+    #one for training and the other for testing
+    #training will play over and over with no break until stop is pressed
+    #testing will play once then return to title
+
+
+    #play_game()
