@@ -35,10 +35,12 @@ def draw_titlescreen():
     training = titlefont.render("Training Mode", 1, BLACK)
     training_rect = training.get_rect(center=(width / 2, 2 * height / 3))
     screen.blit(training, training_rect)
+    print(training_rect)
 
     testing = titlefont.render("Testing Mode", 1, BLACK)
     testing_rect = testing.get_rect(center=(width / 2, 2 * (height / 3) - 50))
     screen.blit(testing, testing_rect)
+    print(testing_rect)
 
     pygame.display.update()
     return training, testing
@@ -132,6 +134,7 @@ def init_board():
 def play_game():
     turn = 0
     game_over = False
+    draw_board(board)
     while not game_over:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -189,6 +192,7 @@ def play_game():
 
 if __name__ == "__main__":
     init_board()
+    #play_game()
     buttons = draw_titlescreen()
 
     clicked = False
@@ -198,15 +202,22 @@ if __name__ == "__main__":
                 sys.exit()
             if event.type == pygame.MOUSEMOTION:
                 #fix
+                #print(event.pos[0], event.pos[1])
                 button1 = buttons[0]
-                button1rect = button1.get_rect()
-                print(button1rect[0], button1rect[1])
-                if button1rect.collidepoint(event.pos[0], event.pos[1]):
-                    button1.render("Training Mode", 1, WHITE)
-                    pygame.display.update()
+                button1_rect = button1.get_rect(center=(width / 2, 2 * height / 2))
+                if button1_rect.collidepoint(event.pos[0], event.pos[1]):
+                    print("hi")
+                    button1 = titlefont.render("Training Mode", 1, WHITE)
+                    screen.blit(button1, button1_rect)
+                    #print(button1rect)
+                    #button1.render("Training Mode", 1, WHITE)
+                    #pygame.display.update()
+                    #training = titlefont.render("Training Mode", 1, BLACK)
+                    #training_rect = training.get_rect(center=(width / 2, 2 * height / 3))
+                    #screen.blit(training, training_rect)
                 #fix to
                 # stuff to highlight when text is moused over
-                clicked = False
+                    clicked = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 clicked = True
 
