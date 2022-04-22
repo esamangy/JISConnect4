@@ -25,27 +25,6 @@ global board
 global screen
 
 
-# code to create and manage the title screen
-def draw_titlescreen():
-    screen.fill(BLUE)
-    title = winfont.render("Connect 4", 1, BLACK)
-    title_rect = title.get_rect(center=(width / 2, height / 6))
-    screen.blit(title, title_rect)
-
-    training = titlefont.render("Training Mode", 1, BLACK)
-    training_rect = training.get_rect(center=(width / 2, 2 * height / 3))
-    screen.blit(training, training_rect)
-    print(training_rect)
-
-    testing = titlefont.render("Testing Mode", 1, BLACK)
-    testing_rect = testing.get_rect(center=(width / 2, 2 * (height / 3) - 50))
-    screen.blit(testing, testing_rect)
-    print(testing_rect)
-
-    pygame.display.update()
-    return training, testing
-
-
 # code to create and manage the game board
 def create_board():
     temp = np.zeros((ROW_COUNT, COLUMN_COUNT))
@@ -192,32 +171,50 @@ def play_game():
 
 if __name__ == "__main__":
     init_board()
+    screen.fill(BLUE)
+    title = winfont.render("Connect 4", 1, BLACK)
+    title_rect = title.get_rect(center=(width / 2, height / 6))
+    screen.blit(title, title_rect)
+
+    training = titlefont.render("Training Mode", 1, BLACK)
+    training_rect = training.get_rect(center=(width / 2, 2 * height / 3))
+    screen.blit(training, training_rect)
+    # print(training_rect)
+
+    testing = titlefont.render("Testing Mode", 1, BLACK)
+    testing_rect = testing.get_rect(center=(width / 2, 2 * (height / 3) - 50))
+    screen.blit(testing, testing_rect)
+    pygame.display.update()
     #play_game()
-    buttons = draw_titlescreen()
+    #buttons = draw_titlescreen()
 
     clicked = False
     while not clicked:
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEMOTION:
-                #fix
-                #print(event.pos[0], event.pos[1])
-                button1 = buttons[0]
-                button1_rect = button1.get_rect(center=(width / 2, 2 * height / 2))
-                if button1_rect.collidepoint(event.pos[0], event.pos[1]):
-                    print("hi")
-                    button1 = titlefont.render("Training Mode", 1, WHITE)
-                    screen.blit(button1, button1_rect)
-                    #print(button1rect)
-                    #button1.render("Training Mode", 1, WHITE)
-                    #pygame.display.update()
-                    #training = titlefont.render("Training Mode", 1, BLACK)
-                    #training_rect = training.get_rect(center=(width / 2, 2 * height / 3))
-                    #screen.blit(training, training_rect)
-                #fix to
-                # stuff to highlight when text is moused over
-                    clicked = False
+                if training_rect.collidepoint(event.pos[0], event.pos[1]):
+                    title = winfont.render("Connect 4", 1, BLACK)
+                    title_rect = title.get_rect(center=(width / 2, height / 6))
+                    screen.blit(title, title_rect)
+                    training = titlefont.render("Training Mode", 1, WHITE)
+                else:
+                    training = titlefont.render("Training Mode", 1, BLACK)
+
+                if testing_rect.collidepoint(event.pos[0], event.pos[1]):
+                    title = winfont.render("Connect 4", 1, BLACK)
+                    title_rect = title.get_rect(center=(width / 2, height / 6))
+                    screen.blit(title, title_rect)
+                    testing = titlefont.render("Testing Mode", 1, WHITE)
+                else:
+                    testing = titlefont.render("Testing Mode", 1, BLACK)
+                screen.blit(training, training_rect)
+                screen.blit(testing, testing_rect)
+                pygame.display.update()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 clicked = True
 
