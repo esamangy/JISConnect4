@@ -115,7 +115,7 @@ def init_board():
 
 
 # two inputs for who the players are. 1 for human, 2 for optimal, 3 for Agent
-def play_game(Player1, Player2):
+def play_game(Player1, Player2, training):
     turn = 0
     game_over = False
     draw_board(board)
@@ -135,37 +135,37 @@ def play_game(Player1, Player2):
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
-                if turn == 0:
-                    posx = event.pos[0]
-                    col = int(math.floor(posx / SQUARESIZE))
+                if turn % 2 == 0:
+                    if Player1 == 1:
+                        posx = event.pos[0]
+                        col = int(math.floor(posx / SQUARESIZE))
 
-                    if is_valid_location(board, col):
-                        row = get_next_open_row(board, col)
-                        drop_piece(board, row, col, 1)
+                        if is_valid_location(board, col):
+                            row = get_next_open_row(board, col)
+                            drop_piece(board, row, col, 1)
 
-                        if winning_move(board, 1):
-                            label = winfont.render("Player 1 wins!", 1, RED)
-                            screen.blit(label, (40, 10))
-                            game_over = True
+                            if winning_move(board, 1):
+                                label = winfont.render("Player 1 wins!", 1, RED)
+                                screen.blit(label, (40, 10))
+                                game_over = True
 
-                        turn += 1
-                        turn %= 2
+                            turn += 1
 
                 else:
-                    posx = event.pos[0]
-                    col = int(math.floor(posx / SQUARESIZE))
+                    if Player2 == 1:
+                        posx = event.pos[0]
+                        col = int(math.floor(posx / SQUARESIZE))
 
-                    if is_valid_location(board, col):
-                        row = get_next_open_row(board, col)
-                        drop_piece(board, row, col, 2)
+                        if is_valid_location(board, col):
+                            row = get_next_open_row(board, col)
+                            drop_piece(board, row, col, 2)
 
-                        if winning_move(board, 2):
-                            label = winfont.render("Player 2 wins!", 1, YELLOW)
-                            screen.blit(label, (40, 10))
-                            game_over = True
+                            if winning_move(board, 2):
+                                label = winfont.render("Player 2 wins!", 1, YELLOW)
+                                screen.blit(label, (40, 10))
+                                game_over = True
 
-                        turn += 1
-                        turn %= 2
+                            turn += 1
 
                 print_board(board)
                 draw_board(board)
@@ -262,11 +262,9 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if not testmode and training_rect.collidepoint(event.pos[0], event.pos[1]):
                     if (random.randrange(1, 100) % 2) == 0:
-                        print("yo")
-                        play_game(2, 3)
+                        play_game(2, 3, True)
                     else:
-                        print("hey")
-                        play_game(3, 2)
+                        play_game(3, 2, True)
                 elif not testmode and testing_rect.collidepoint(event.pos[0], event.pos[1]):
                     testmode = True
                     Playerbool1 = True
@@ -274,13 +272,13 @@ if __name__ == "__main__":
                 if testmode and Playerbool2:
                     if text2_rect.collidepoint(event.pos[0], event.pos[1]):
                         player1 = 1
-                        play_game(player1, player2)
+                        play_game(player1, player2, False)
                     if text3_rect.collidepoint(event.pos[0], event.pos[1]):
                         player1 = 2
-                        play_game(player1, player2)
+                        play_game(player1, player2, False)
                     if text4_rect.collidepoint(event.pos[0], event.pos[1]):
                         player1 = 3
-                        play_game(player1, player2)
+                        play_game(player1, player2, False)
                 elif testmode and Playerbool1:
                     if text2_rect.collidepoint(event.pos[0], event.pos[1]):
                         player2 = 1
@@ -294,7 +292,6 @@ if __name__ == "__main__":
                         player2 = 3
                         Playerbool1 = False
                         Playerbool2 = True
-
 
                 pygame.display.update()
 
