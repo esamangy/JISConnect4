@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 import sys
 import math
-
+import random
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
@@ -76,17 +76,21 @@ def winning_move(b, p):
 
 
 def draw_board(b):
+    screen.fill(BLACK)
     for c in range(COLUMN_COUNT):
         for r in range(ROW_COUNT):
             pygame.draw.rect(screen, BLUE, (c*SQUARESIZE, r*SQUARESIZE+SQUARESIZE, SQUARESIZE, SQUARESIZE))
-            pygame.draw.circle(screen, BLACK, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
+            pygame.draw.circle(screen, BLACK, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE /
+                                                                                   2)), RADIUS)
 
     for c in range(COLUMN_COUNT):
         for r in range(ROW_COUNT):
             if board[r][c] == 1:
-                pygame.draw.circle(screen, RED, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
+                pygame.draw.circle(screen, RED, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE / 2
+                                                                                            )), RADIUS)
             elif board[r][c] == 2:
-                pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
+                pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE /
+                                                                                               2)), RADIUS)
     pygame.display.update()
 
 
@@ -110,7 +114,8 @@ def init_board():
     winfont = pygame.font.SysFont("monospace", 75)
 
 
-def play_game():
+# two inputs for who the players are. 1 for human, 2 for optimal, 3 for Agent
+def play_game(Player1, Player2):
     turn = 0
     game_over = False
     draw_board(board)
@@ -185,41 +190,116 @@ if __name__ == "__main__":
     testing_rect = testing.get_rect(center=(width / 2, 2 * (height / 3) - 50))
     screen.blit(testing, testing_rect)
     pygame.display.update()
+
+    text1 = titlefont.render("What will Player 2 be?:", 1, BLACK)
+    text1_rect = text1.get_rect(center=(width / 2, height / 6))
+    text2 = titlefont.render("Human", 1, BLACK)
+    text2_rect = text2.get_rect(center=(width / 2, height / 4))
+    text3 = titlefont.render("Optimal", 1, BLACK)
+    text3_rect = text3.get_rect(center=(width / 2, height / 3))
+    text4 = titlefont.render("Agent", 1, BLACK)
+    text4_rect = text4.get_rect(center=(width / 2, (height / 2) - (height / 12)))
     #play_game()
     #buttons = draw_titlescreen()
 
     clicked = False
+    testmode = False
+    Playerbool1 = False
+    Playerbool2 = False
+    player1 = 0
+    Player2 = 0
     while not clicked:
-
+        pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEMOTION:
-                if training_rect.collidepoint(event.pos[0], event.pos[1]):
+                if not testmode and training_rect.collidepoint(event.pos[0], event.pos[1]):
                     title = winfont.render("Connect 4", 1, BLACK)
                     title_rect = title.get_rect(center=(width / 2, height / 6))
                     screen.blit(title, title_rect)
                     training = titlefont.render("Training Mode", 1, WHITE)
-                else:
-                    training = titlefont.render("Training Mode", 1, BLACK)
-
-                if testing_rect.collidepoint(event.pos[0], event.pos[1]):
+                elif not testmode and testing_rect.collidepoint(event.pos[0], event.pos[1]):
                     title = winfont.render("Connect 4", 1, BLACK)
                     title_rect = title.get_rect(center=(width / 2, height / 6))
                     screen.blit(title, title_rect)
                     testing = titlefont.render("Testing Mode", 1, WHITE)
+                elif testmode:
+                    if Playerbool1:
+                        screen.fill(BLUE)
+                        text1 = titlefont.render("What will Player 1 be?:", 1, BLACK)
+                        text1_rect = text1.get_rect(center=(width / 2, height / 6))
+                        screen.blit(text1, text1_rect)
+                    elif Playerbool2:
+                        screen.fill(BLUE)
+                        text1 = titlefont.render("What will Player 2 be?:", 1, BLACK)
+                        text1_rect = text1.get_rect(center=(width / 2, height / 6))
+                        screen.blit(text1, text1_rect)
+                    text2 = titlefont.render("Human", 1, BLACK)
+                    text2_rect = text2.get_rect(center=(width / 2, height / 4))
+                    if text2_rect.collidepoint(event.pos[0], event.pos[1]):
+                        text2 = titlefont.render("Human", 1, WHITE)
+                    screen.blit(text2, text2_rect)
+                    text3 = titlefont.render("Optimal", 1, BLACK)
+                    text3_rect = text3.get_rect(center=(width / 2, height / 3))
+                    if text3_rect.collidepoint(event.pos[0], event.pos[1]):
+                        text3 = titlefont.render("Optimal", 1, WHITE)
+                    screen.blit(text3, text3_rect)
+                    text4 = titlefont.render("Agent", 1, BLACK)
+                    text4_rect = text4.get_rect(center=(width / 2, (height / 2) - (height / 12)))
+                    if text4_rect.collidepoint(event.pos[0], event.pos[1]):
+                        text4 = titlefont.render("Agent", 1, WHITE)
+                    screen.blit(text4, text4_rect)
                 else:
+                    training = titlefont.render("Training Mode", 1, BLACK)
                     testing = titlefont.render("Testing Mode", 1, BLACK)
-                screen.blit(training, training_rect)
-                screen.blit(testing, testing_rect)
+                if not testmode:
+                    screen.blit(training, training_rect)
+                    screen.blit(testing, testing_rect)
+
                 pygame.display.update()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                clicked = True
+                if not testmode and training_rect.collidepoint(event.pos[0], event.pos[1]):
+                    if (random.randrange(1, 100) % 2) == 0:
+                        print("yo")
+                        play_game(2, 3)
+                    else:
+                        print("hey")
+                        play_game(3, 2)
+                elif not testmode and testing_rect.collidepoint(event.pos[0], event.pos[1]):
+                    testmode = True
+                    Playerbool1 = True
 
-    #logic to update title so that when mouse over option it changes
-    #the play_game method will have 2 variations
-    #one for training and the other for testing
+                if testmode and Playerbool2:
+                    if text2_rect.collidepoint(event.pos[0], event.pos[1]):
+                        player1 = 1
+                        play_game(player1, player2)
+                    if text3_rect.collidepoint(event.pos[0], event.pos[1]):
+                        player1 = 2
+                        play_game(player1, player2)
+                    if text4_rect.collidepoint(event.pos[0], event.pos[1]):
+                        player1 = 3
+                        play_game(player1, player2)
+                elif testmode and Playerbool1:
+                    if text2_rect.collidepoint(event.pos[0], event.pos[1]):
+                        player2 = 1
+                        Playerbool1 = False
+                        Playerbool2 = True
+                    if text3_rect.collidepoint(event.pos[0], event.pos[1]):
+                        player2 = 2
+                        Playerbool1 = False
+                        Playerbool2 = True
+                    if text4_rect.collidepoint(event.pos[0], event.pos[1]):
+                        player2 = 3
+                        Playerbool1 = False
+                        Playerbool2 = True
+
+
+                pygame.display.update()
+
+
+    #fix win state
     #training will play over and over with no break until stop is pressed
     #testing will play once then return to title
 
