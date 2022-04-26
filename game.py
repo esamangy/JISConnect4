@@ -148,17 +148,14 @@ def play_game(Player1, Player2, training):
             if turn % 2 == 0:
                 if Player1 == 2:
                     col = optimal_move(board, 1)
-                    print("yea1")
                 elif Player1 == 3:
                     col = agent_move(board, 1)
-                    print("yea2")
             else:
                 if Player2 == 2:
                     col = optimal_move(board, 2)
-                    print("yea3")
                 elif Player2 == 3:
                     col = agent_move(board, 2)
-                    print("yea4")
+
         #print("kinda")
         if col != -1:
             if turn % 2 == 0:
@@ -173,6 +170,7 @@ def play_game(Player1, Player2, training):
                     if winning_move(board, 1):
                         label = winfont.render("Player 1 wins!", 1, RED)
                         screen.blit(label, (40, 10))
+                        pygame.display.update()
                         game_over = True
                         print("Won1")
             else:
@@ -188,8 +186,9 @@ def play_game(Player1, Player2, training):
                     if winning_move(board, 2):
                         label = winfont.render("Player 2 wins!", 1, YELLOW)
                         screen.blit(label, (40, 10))
+                        pygame.display.update()
                         game_over = True
-                        print("Won1")
+                        print("Won2")
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -224,6 +223,7 @@ def play_game(Player1, Player2, training):
                                 label = winfont.render("Player 1 wins!", 1, RED)
                                 screen.blit(label, (40, 10))
                                 game_over = True
+                                print("win3")
 
                             if player2 != 1:
                                 needhuman = False
@@ -243,6 +243,7 @@ def play_game(Player1, Player2, training):
                                 label = winfont.render("Player 2 wins!", 1, YELLOW)
                                 screen.blit(label, (40, 10))
                                 game_over = True
+                                print("win4")
 
                             if Player1 != 1:
                                 needhuman = False
@@ -253,7 +254,8 @@ def play_game(Player1, Player2, training):
                 draw_board(board)
 
                 if game_over:
-                    return keepplaying
+                    pygame.time.wait(3000)
+                    #return keepplaying
 
 
 if __name__ == "__main__":
@@ -418,11 +420,3 @@ if __name__ == "__main__":
                         Playerbool2 = True
 
                 pygame.display.update()
-
-
-    #fix win state
-    #training will play over and over with no break until stop is pressed
-    #testing will play once then return to title
-
-
-    #play_game()
