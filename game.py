@@ -6,6 +6,7 @@ import random
 from OptimalAI import optimal_move
 from Agent import agent_move
 
+
 ROW_COUNT = 6
 COLUMN_COUNT = 7
 SQUARESIZE = 100
@@ -16,7 +17,7 @@ height = (ROW_COUNT + 1) * SQUARESIZE
 
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
-GRAY = (120, 120, 120)
+GRAY = (80, 80, 80)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
@@ -28,30 +29,36 @@ global board
 global screen
 
 
-# code to create and manage the game board
+# creates a 2D array full of zeros to represent the game board
 def create_board():
     temp = np.zeros((ROW_COUNT, COLUMN_COUNT))
     return temp
 
 
+# puts a piece p at b[r][c]
 def drop_piece(b, r, c, p):
     b[r][c] = p
 
 
+# determines if column can accept a piece
 def is_valid_location(b, c):
     return b[ROW_COUNT - 1][c] == 0
 
 
+# ets next open row in any coloum c
 def get_next_open_row(b, c):
     for r in range(ROW_COUNT):
         if b[r][c] == 0:
             return r
 
 
+# prints board in console for debug purposes
 def print_board(b):
     print(np.flip(board, 0))
 
 
+# checks to see if the piece p (1 or 2 essentially which player) as won by getting four in a row
+# checks horizontal, vertical, and both diagonals
 def winning_move(b, p):
     # Check horizontal locations for win
     for c in range(COLUMN_COUNT - 3):
@@ -78,6 +85,7 @@ def winning_move(b, p):
                 return True
 
 
+# draws graphical representation of the game board
 def draw_board(b):
     screen.fill(BLACK)
     for c in range(COLUMN_COUNT):
@@ -106,7 +114,7 @@ def init_board():
     pygame.init()
     global board
     board = create_board()
-    print_board(board)
+    #print_board(board)
 
     pygame.init()
 
@@ -122,25 +130,66 @@ def init_board():
 
 
 # two inputs for who the players are. 1 for human, 2 for optimal, 3 for Agent
+# will return True if in training mode. Will return false if done button clicked or in testing mode
 def play_game(Player1, Player2, training):
     turn = 0
+    col = -1
     game_over = False
+    needhuman = True
+    if Player1 != 1:
+        needhuman = False
     keepplaying = training
     draw_board(board)
     while not game_over:
         donetext = titlefont.render("Done", 1, GRAY)
         donetext_rect = donetext.get_rect(center=(width - 60, 20))
 
-
-        if Player1 == 2 and turn == 0:
-            optimal_move(board, 1)
-        elif Player1 == 2 and turn == 1:
-            optimal_move(board, 2)
-
-        if Player1 == 3 and turn == 0:
-            agent_move(board, 1)
-        elif Player1 == 3 and turn == 1:
-            agent_move(board, 2)
+        if not needhuman:
+            if turn % 2 == 0:
+                if Player1 == 2:
+                    col = optimal_move(board, 1)
+                    print("yea1")
+                elif Player1 == 3:
+                    col = agent_move(board, 1)
+                    print("yea2")
+            else:
+                if Player2 == 2:
+                    col = optimal_move(board, 2)
+                    print("yea3")
+                elif Player2 == 3:
+                    col = agent_move(board, 2)
+                    print("yea4")
+        #print("kinda")
+        if col != -1:
+            if turn % 2 == 0:
+                if is_valid_location(board, col):
+                    row = get_next_open_row(board, col)
+                    drop_piece(board, row, col, 1)
+                    turn += 1
+                    if Player2 == 1:
+                        needhuman = True
+                    col = -1
+                    draw_board(board)
+                    if winning_move(board, 1):
+                        label = winfont.render("Player 1 wins!", 1, RED)
+                        screen.blit(label, (40, 10))
+                        game_over = True
+                        print("Won1")
+            else:
+                if is_valid_location(board, col):
+                    row = get_next_open_row(board, col)
+                    drop_piece(board, row, col, 2)
+                    turn += 1
+                    if Player1 == 1:
+                        needhuman = True
+                    col = -1
+                    needhuman = True
+                    draw_board(board)
+                    if winning_move(board, 2):
+                        label = winfont.render("Player 2 wins!", 1, YELLOW)
+                        screen.blit(label, (40, 10))
+                        game_over = True
+                        print("Won1")
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -149,7 +198,7 @@ def play_game(Player1, Player2, training):
             if event.type == pygame.MOUSEMOTION:
                 pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
                 posx = event.pos[0]
-                if turn == 0:
+                if turn % 2 == 0:
                     pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)
                 else:
                     pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE / 2)), RADIUS)
@@ -176,6 +225,9 @@ def play_game(Player1, Player2, training):
                                 screen.blit(label, (40, 10))
                                 game_over = True
 
+                            if player2 != 1:
+                                needhuman = False
+                            col = -1
                             turn += 1
 
                 else:
@@ -192,9 +244,12 @@ def play_game(Player1, Player2, training):
                                 screen.blit(label, (40, 10))
                                 game_over = True
 
+                            if Player1 != 1:
+                                needhuman = False
+                            col = -1
                             turn += 1
 
-                print_board(board)
+                #print_board(board)
                 draw_board(board)
 
                 if game_over:
@@ -202,30 +257,6 @@ def play_game(Player1, Player2, training):
 
 
 if __name__ == "__main__":
-    init_board()
-    screen.fill(BLUE)
-    title = winfont.render("Connect 4", 1, BLACK)
-    title_rect = title.get_rect(center=(width / 2, height / 6))
-    screen.blit(title, title_rect)
-
-    training = titlefont.render("Training Mode", 1, BLACK)
-    training_rect = training.get_rect(center=(width / 2, 2 * height / 3))
-    screen.blit(training, training_rect)
-    # print(training_rect)
-
-    testing = titlefont.render("Testing Mode", 1, BLACK)
-    testing_rect = testing.get_rect(center=(width / 2, 2 * (height / 3) - 50))
-    screen.blit(testing, testing_rect)
-    pygame.display.update()
-
-    text1 = titlefont.render("What will Player 2 be?:", 1, BLACK)
-    text1_rect = text1.get_rect(center=(width / 2, height / 6))
-    text2 = titlefont.render("Human", 1, BLACK)
-    text2_rect = text2.get_rect(center=(width / 2, height / 4))
-    text3 = titlefont.render("Optimal", 1, BLACK)
-    text3_rect = text3.get_rect(center=(width / 2, height / 3))
-    text4 = titlefont.render("Agent", 1, BLACK)
-    text4_rect = text4.get_rect(center=(width / 2, (height / 2) - (height / 12)))
 
     clicked = False
     setup = False
@@ -315,23 +346,27 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if not testmode and training_rect.collidepoint(event.pos[0], event.pos[1]):
                     if (random.randrange(1, 100) % 2) == 0:
-                        returnvalue = play_game(2, 3, True)
-                        if not returnvalue:
-                            testmode = False
-                            Playerbool1 = False
-                            Playerbool2 = False
-                            setup = False
-                            player1 = 0
-                            Player2 = 0
+                        returnvalue = False
+                        while not returnvalue:
+                            returnvalue = play_game(2, 3, True)
+                            if not returnvalue:
+                                testmode = False
+                                Playerbool1 = False
+                                Playerbool2 = False
+                                setup = False
+                                player1 = 0
+                                Player2 = 0
                     else:
-                        returnvalue = play_game(3, 2, True)
-                        if not returnvalue:
-                            testmode = False
-                            Playerbool1 = False
-                            Playerbool2 = False
-                            setup = False
-                            player1 = 0
-                            Player2 = 0
+                        returnvalue = False
+                        while not returnvalue:
+                            returnvalue = play_game(3, 2, True)
+                            if not returnvalue:
+                                testmode = False
+                                Playerbool1 = False
+                                Playerbool2 = False
+                                setup = False
+                                player1 = 0
+                                Player2 = 0
 
                 elif not testmode and testing_rect.collidepoint(event.pos[0], event.pos[1]):
                     testmode = True
@@ -339,7 +374,7 @@ if __name__ == "__main__":
 
                 if testmode and Playerbool2:
                     if text2_rect.collidepoint(event.pos[0], event.pos[1]):
-                        player1 = 1
+                        player2 = 1
                         returnvalue = play_game(player1, player2, False)
                         if not returnvalue:
                             testmode = False
@@ -349,7 +384,7 @@ if __name__ == "__main__":
                             player1 = 0
                             Player2 = 0
                     if text3_rect.collidepoint(event.pos[0], event.pos[1]):
-                        player1 = 2
+                        player2 = 2
                         returnvalue = play_game(player1, player2, False)
                         if not returnvalue:
                             testmode = False
@@ -359,7 +394,7 @@ if __name__ == "__main__":
                             player1 = 0
                             Player2 = 0
                     if text4_rect.collidepoint(event.pos[0], event.pos[1]):
-                        player1 = 3
+                        player2 = 3
                         returnvalue = play_game(player1, player2, False)
                         if not returnvalue:
                             testmode = False
@@ -370,15 +405,15 @@ if __name__ == "__main__":
                             Player2 = 0
                 elif testmode and Playerbool1:
                     if text2_rect.collidepoint(event.pos[0], event.pos[1]):
-                        player2 = 1
+                        player1 = 1
                         Playerbool1 = False
                         Playerbool2 = True
                     if text3_rect.collidepoint(event.pos[0], event.pos[1]):
-                        player2 = 2
+                        player1 = 2
                         Playerbool1 = False
                         Playerbool2 = True
                     if text4_rect.collidepoint(event.pos[0], event.pos[1]):
-                        player2 = 3
+                        player1 = 3
                         Playerbool1 = False
                         Playerbool2 = True
 
