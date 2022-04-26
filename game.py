@@ -3,6 +3,8 @@ import pygame
 import sys
 import math
 import random
+from OptimalAI import optimal_move
+from Agent import agent_move
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
@@ -14,6 +16,7 @@ height = (ROW_COUNT + 1) * SQUARESIZE
 
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
+GRAY = (120, 120, 120)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
@@ -91,6 +94,10 @@ def draw_board(b):
             elif board[r][c] == 2:
                 pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE /
                                                                                                2)), RADIUS)
+
+    donetext = titlefont.render("Done", 1, GRAY)
+    donetext_rect = donetext.get_rect(center=(width - 60, 20))
+    screen.blit(donetext, donetext_rect)
     pygame.display.update()
 
 
@@ -118,8 +125,23 @@ def init_board():
 def play_game(Player1, Player2, training):
     turn = 0
     game_over = False
+    keepplaying = training
     draw_board(board)
     while not game_over:
+        donetext = titlefont.render("Done", 1, GRAY)
+        donetext_rect = donetext.get_rect(center=(width - 60, 20))
+
+
+        if Player1 == 2 and turn == 0:
+            optimal_move(board, 1)
+        elif Player1 == 2 and turn == 1:
+            optimal_move(board, 2)
+
+        if Player1 == 3 and turn == 0:
+            agent_move(board, 1)
+        elif Player1 == 3 and turn == 1:
+            agent_move(board, 2)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -131,9 +153,14 @@ def play_game(Player1, Player2, training):
                     pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)
                 else:
                     pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE / 2)), RADIUS)
+                if donetext_rect.collidepoint(event.pos[0], event.pos[1]):
+                    donetext = titlefont.render("Done", 1, WHITE)
+                screen.blit(donetext, donetext_rect)
             pygame.display.update()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if donetext_rect.collidepoint(event.pos[0], event.pos[1]):
+                    return False
                 pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
                 if turn % 2 == 0:
                     if Player1 == 1:
@@ -171,7 +198,7 @@ def play_game(Player1, Player2, training):
                 draw_board(board)
 
                 if game_over:
-                    pygame.time.wait(3000)
+                    return keepplaying
 
 
 if __name__ == "__main__":
@@ -199,17 +226,43 @@ if __name__ == "__main__":
     text3_rect = text3.get_rect(center=(width / 2, height / 3))
     text4 = titlefont.render("Agent", 1, BLACK)
     text4_rect = text4.get_rect(center=(width / 2, (height / 2) - (height / 12)))
-    #play_game()
-    #buttons = draw_titlescreen()
 
     clicked = False
+    setup = False
     testmode = False
     Playerbool1 = False
     Playerbool2 = False
     player1 = 0
     Player2 = 0
     while not clicked:
-        pygame.display.update()
+
+        if not setup:
+            init_board()
+            screen.fill(BLUE)
+            title = winfont.render("Connect 4", 1, BLACK)
+            title_rect = title.get_rect(center=(width / 2, height / 6))
+            screen.blit(title, title_rect)
+
+            training = titlefont.render("Training Mode", 1, BLACK)
+            training_rect = training.get_rect(center=(width / 2, 2 * height / 3))
+            screen.blit(training, training_rect)
+            # print(training_rect)
+
+            testing = titlefont.render("Testing Mode", 1, BLACK)
+            testing_rect = testing.get_rect(center=(width / 2, 2 * (height / 3) - 50))
+            screen.blit(testing, testing_rect)
+            pygame.display.update()
+
+            text1 = titlefont.render("What will Player 2 be?:", 1, BLACK)
+            text1_rect = text1.get_rect(center=(width / 2, height / 6))
+            text2 = titlefont.render("Human", 1, BLACK)
+            text2_rect = text2.get_rect(center=(width / 2, height / 4))
+            text3 = titlefont.render("Optimal", 1, BLACK)
+            text3_rect = text3.get_rect(center=(width / 2, height / 3))
+            text4 = titlefont.render("Agent", 1, BLACK)
+            text4_rect = text4.get_rect(center=(width / 2, (height / 2) - (height / 12)))
+            setup = True
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -262,9 +315,24 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if not testmode and training_rect.collidepoint(event.pos[0], event.pos[1]):
                     if (random.randrange(1, 100) % 2) == 0:
-                        play_game(2, 3, True)
+                        returnvalue = play_game(2, 3, True)
+                        if not returnvalue:
+                            testmode = False
+                            Playerbool1 = False
+                            Playerbool2 = False
+                            setup = False
+                            player1 = 0
+                            Player2 = 0
                     else:
-                        play_game(3, 2, True)
+                        returnvalue = play_game(3, 2, True)
+                        if not returnvalue:
+                            testmode = False
+                            Playerbool1 = False
+                            Playerbool2 = False
+                            setup = False
+                            player1 = 0
+                            Player2 = 0
+
                 elif not testmode and testing_rect.collidepoint(event.pos[0], event.pos[1]):
                     testmode = True
                     Playerbool1 = True
@@ -272,13 +340,34 @@ if __name__ == "__main__":
                 if testmode and Playerbool2:
                     if text2_rect.collidepoint(event.pos[0], event.pos[1]):
                         player1 = 1
-                        play_game(player1, player2, False)
+                        returnvalue = play_game(player1, player2, False)
+                        if not returnvalue:
+                            testmode = False
+                            Playerbool1 = False
+                            Playerbool2 = False
+                            setup = False
+                            player1 = 0
+                            Player2 = 0
                     if text3_rect.collidepoint(event.pos[0], event.pos[1]):
                         player1 = 2
-                        play_game(player1, player2, False)
+                        returnvalue = play_game(player1, player2, False)
+                        if not returnvalue:
+                            testmode = False
+                            Playerbool1 = False
+                            Playerbool2 = False
+                            setup = False
+                            player1 = 0
+                            Player2 = 0
                     if text4_rect.collidepoint(event.pos[0], event.pos[1]):
                         player1 = 3
-                        play_game(player1, player2, False)
+                        returnvalue = play_game(player1, player2, False)
+                        if not returnvalue:
+                            testmode = False
+                            Playerbool1 = False
+                            Playerbool2 = False
+                            setup = False
+                            player1 = 0
+                            Player2 = 0
                 elif testmode and Playerbool1:
                     if text2_rect.collidepoint(event.pos[0], event.pos[1]):
                         player2 = 1
