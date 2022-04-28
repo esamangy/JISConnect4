@@ -12,3 +12,6 @@
 #training mode needs to have a stop button which will stop after current game is finished and return to title screen
 #testing mode will play one game and then ask to play again or return to title
 #need to make sure progress is saved between closing of program
+
+def agent_move(board, piece):
+    return 4, 4
