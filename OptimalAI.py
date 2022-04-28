@@ -7,6 +7,7 @@ EMPTY = 0
 WINDOW_LENGTH = 4
 ROW_COUNT = 6
 COLUMN_COUNT = 7
+SEARCH_DEPTH = 4
 global PLAYER_PIECE
 global AI_PIECE
 global board
@@ -64,7 +65,7 @@ def optimal_move(b, piece):
         AI_PIECE = 2
     else:
         AI_PIECE = 1
-    return minimax(board, 4, -math.inf, math.inf, True)
+    return minimax(board, SEARCH_DEPTH, -math.inf, math.inf, True)
 
 
 def evaluate_window(window, piece):
