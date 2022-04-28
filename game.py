@@ -45,7 +45,7 @@ def is_valid_location(b, c):
     return b[ROW_COUNT - 1][c] == 0
 
 
-# ets next open row in any coloum c
+# gets next open row in any column c
 def get_next_open_row(b, c):
     for r in range(ROW_COUNT):
         if b[r][c] == 0:
@@ -134,6 +134,7 @@ def init_board():
 def play_game(Player1, Player2, training):
     turn = 0
     col = -1
+    label = winfont.render("words", 1, WHITE)
     game_over = False
     needhuman = True
     if Player1 != 1:
@@ -147,14 +148,14 @@ def play_game(Player1, Player2, training):
         if not needhuman:
             if turn % 2 == 0:
                 if Player1 == 2:
-                    col = optimal_move(board, 1)
+                    col, score = optimal_move(board, 1)
                 elif Player1 == 3:
-                    col = agent_move(board, 1)
+                    col, score = agent_move(board, 1)
             else:
                 if Player2 == 2:
-                    col = optimal_move(board, 2)
+                    col, score = optimal_move(board, 2)
                 elif Player2 == 3:
-                    col = agent_move(board, 2)
+                    col, score = agent_move(board, 2)
 
         #print("kinda")
         if col != -1:
@@ -169,10 +170,8 @@ def play_game(Player1, Player2, training):
                     draw_board(board)
                     if winning_move(board, 1):
                         label = winfont.render("Player 1 wins!", 1, RED)
-                        screen.blit(label, (40, 10))
-                        pygame.display.update()
                         game_over = True
-                        print("Won1")
+                        #print("Won1")
             else:
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
@@ -185,10 +184,8 @@ def play_game(Player1, Player2, training):
                     draw_board(board)
                     if winning_move(board, 2):
                         label = winfont.render("Player 2 wins!", 1, YELLOW)
-                        screen.blit(label, (40, 10))
-                        pygame.display.update()
                         game_over = True
-                        print("Won2")
+                        #print("Won2")
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -221,7 +218,6 @@ def play_game(Player1, Player2, training):
 
                             if winning_move(board, 1):
                                 label = winfont.render("Player 1 wins!", 1, RED)
-                                screen.blit(label, (40, 10))
                                 game_over = True
                                 print("win3")
 
@@ -241,7 +237,6 @@ def play_game(Player1, Player2, training):
 
                             if winning_move(board, 2):
                                 label = winfont.render("Player 2 wins!", 1, YELLOW)
-                                screen.blit(label, (40, 10))
                                 game_over = True
                                 print("win4")
 
@@ -250,12 +245,12 @@ def play_game(Player1, Player2, training):
                             col = -1
                             turn += 1
 
-                #print_board(board)
-                draw_board(board)
-
-                if game_over:
-                    pygame.time.wait(3000)
-                    #return keepplaying
+        if game_over:
+            print("hello")
+            screen.blit(label, (40, 10))
+            pygame.display.update()
+            pygame.time.wait(3000)
+            #return keepplaying
 
 
 if __name__ == "__main__":

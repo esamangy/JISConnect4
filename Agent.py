@@ -14,4 +14,4 @@
 #need to make sure progress is saved between closing of program
 
 def agent_move(board, piece):
-    return 4
+    return 4, 4

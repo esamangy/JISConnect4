@@ -21,7 +21,7 @@ def is_valid_location(b, c):
     return b[ROW_COUNT - 1][c] == 0
 
 
-# ets next open row in any coloum c
+# gets next open row in any column c
 def get_next_open_row(b, c):
     for r in range(ROW_COUNT):
         if b[r][c] == 0:
@@ -55,7 +55,6 @@ def winning_move(b, p):
 
 
 def optimal_move(b, piece):
-    # the best move to start the game is to always place the piece in the middle
     global AI_PIECE
     global PLAYER_PIECE
     PLAYER_PIECE = piece
@@ -65,7 +64,7 @@ def optimal_move(b, piece):
         AI_PIECE = 2
     else:
         AI_PIECE = 1
-    return pick_best_move(board, piece)
+    return minimax(board, 4, -math.inf, math.inf, True)
 
 
 def evaluate_window(window, piece):
@@ -157,7 +156,7 @@ def minimax(b, depth, alpha, beta, maximizingPlayer):
         return column, value
 
     else: # Minimizing player
-        # value = math.inf
+        value = math.inf
         column = random.choice(valid_locations)
         for col in valid_locations:
             row = get_next_open_row(b, col)
