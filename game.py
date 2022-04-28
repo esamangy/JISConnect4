@@ -243,11 +243,20 @@ def play_game(Player1, Player2, training):
                                 needhuman = False
                             col = -1
                             turn += 1
+        if turn == 42:
+            if winning_move(board, 1):
+                label = winfont.render("Player 1 wins!", 1, RED)
+            elif winning_move(board, 2):
+                label = winfont.render("Player 1 wins!", 1, YELLOW)
+            else:
+                label = winfont.render("Tie No winner!", 1, WHITE)
+                game_over = True
 
         if game_over:
             screen.blit(label, (40, 10))
             pygame.display.update()
-            #pygame.time.wait(3000)
+            if not keepplaying:
+                pygame.time.wait(3000)
             return keepplaying
 
 
