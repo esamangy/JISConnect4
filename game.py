@@ -180,7 +180,6 @@ def play_game(Player1, Player2, training):
                     if Player1 == 1:
                         needhuman = True
                     col = -1
-                    needhuman = True
                     draw_board(board)
                     if winning_move(board, 2):
                         label = winfont.render("Player 2 wins!", 1, YELLOW)
@@ -215,7 +214,7 @@ def play_game(Player1, Player2, training):
                         if is_valid_location(board, col):
                             row = get_next_open_row(board, col)
                             drop_piece(board, row, col, 1)
-
+                            draw_board(board)
                             if winning_move(board, 1):
                                 label = winfont.render("Player 1 wins!", 1, RED)
                                 game_over = True
@@ -234,7 +233,7 @@ def play_game(Player1, Player2, training):
                         if is_valid_location(board, col):
                             row = get_next_open_row(board, col)
                             drop_piece(board, row, col, 2)
-
+                            draw_board(board)
                             if winning_move(board, 2):
                                 label = winfont.render("Player 2 wins!", 1, YELLOW)
                                 game_over = True
@@ -246,11 +245,10 @@ def play_game(Player1, Player2, training):
                             turn += 1
 
         if game_over:
-            print("hello")
             screen.blit(label, (40, 10))
             pygame.display.update()
-            pygame.time.wait(3000)
-            #return keepplaying
+            #pygame.time.wait(3000)
+            return keepplaying
 
 
 if __name__ == "__main__":
@@ -343,8 +341,9 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if not testmode and training_rect.collidepoint(event.pos[0], event.pos[1]):
                     if (random.randrange(1, 100) % 2) == 0:
-                        returnvalue = False
-                        while not returnvalue:
+                        returnvalue = True
+                        while returnvalue:
+                            init_board()
                             returnvalue = play_game(2, 3, True)
                             if not returnvalue:
                                 testmode = False
@@ -354,8 +353,9 @@ if __name__ == "__main__":
                                 player1 = 0
                                 Player2 = 0
                     else:
-                        returnvalue = False
-                        while not returnvalue:
+                        returnvalue = True
+                        while returnvalue:
+                            init_board()
                             returnvalue = play_game(3, 2, True)
                             if not returnvalue:
                                 testmode = False
