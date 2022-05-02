@@ -63,25 +63,25 @@ def winning_move(b, p):
     # Check horizontal locations for win
     for c in range(COLUMN_COUNT - 3):
         for r in range(ROW_COUNT):
-            if board[r][c] == p and board[r][c + 1] == p and board[r][c + 2] == p and board[r][c + 3] == p:
+            if b[r][c] == p and b[r][c + 1] == p and b[r][c + 2] == p and b[r][c + 3] == p:
                 return True
 
     # Check vertical locations for win
     for c in range(COLUMN_COUNT):
         for r in range(ROW_COUNT - 3):
-            if board[r][c] == p and board[r + 1][c] == p and board[r + 2][c] == p and board[r + 3][c] == p:
+            if b[r][c] == p and b[r + 1][c] == p and b[r + 2][c] == p and b[r + 3][c] == p:
                 return True
 
     # Check positively sloped diagonals
     for c in range(COLUMN_COUNT - 3):
         for r in range(ROW_COUNT - 3):
-            if board[r][c] == p and board[r + 1][c + 1] == p and board[r + 2][c + 2] == p and board[r + 3][c + 3] == p:
+            if b[r][c] == p and b[r + 1][c + 1] == p and b[r + 2][c + 2] == p and b[r + 3][c + 3] == p:
                 return True
 
     # Check negatively sloped diagonals
     for c in range(COLUMN_COUNT - 3):
         for r in range(3, ROW_COUNT):
-            if board[r][c] == p and board[r - 1][c + 1] == p and board[r - 2][c + 2] == p and board[r - 3][c + 3] == p:
+            if b[r][c] == p and b[r - 1][c + 1] == p and b[r - 2][c + 2] == p and b[r - 3][c + 3] == p:
                 return True
 
 
