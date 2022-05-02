@@ -21,7 +21,7 @@ import copy
 
 
 def agent_move(board, piece):
-    return 4, 4
+    return 4, 3
 
 
 EPOCHS = 100
